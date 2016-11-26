@@ -2,30 +2,23 @@ class Player {
   constructor() {
     this.prevHP;
     this.maxHP = -1;
-    this.enemyCnt = 3;
+    this.enemyCnt = 2;
     this.resqCnt = 1;
+    this.left = false;
   }
 
   playTurn(warrior) {
     const empty = warrior.feel().isEmpty(),
           emptyBack = warrior.feel('backward').isEmpty(),
+          wall = warrior.feel().isWall(),
+          //wallBack = warrior.feel('backward').isWall(),
           currHP = warrior.health();
 
     this.maxHP = Math.max(this.maxHP, currHP);
 
-    if (this.resqCnt > 0 && emptyBack) {
-      warrior.walk('backward');
-    }
-    else if (warrior.feel('backward').isCaptive()) {
-      warrior.rescue('backward');
-      this.resqCnt -= 1;
-    }
-    else if (this.enemyCnt === 1 && currHP > 15) {
-      if (empty) {
-        warrior.walk();
-      } else {
-        warrior.attack();
-      }
+    if (wall) {
+      warrior.pivot();
+      this.left = !this.left;
     }
     else if (currHP < 8 && currHP < this.prevHP && emptyBack) {
       warrior.walk('backward');
