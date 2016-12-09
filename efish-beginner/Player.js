@@ -12,14 +12,17 @@ class Player {
           spaceBack = warrior.feel('backward'),
           empty = space.isEmpty(),
           emptyBack = spaceBack.isEmpty(),
+          spacesAhead = warrior.look(),
+          spacesBack = warrior.look('backward'),
           enemy = space.isEnemy(),
-          wall = space.isWall(),
+          wall = this._isOnlyWallAhead(spacesAhead),
           //wallBack = spaceBack.isWall(),
           currHP = warrior.health(),
-          numOfEnemiesToShootAhead = warrior.look().reduce((cnt, sp)=> {
-            if (sp.isEnemy()) return cnt + 1;
-            else return cnt;
-          }, 0);
+          numOfEnemiesToShootAhead = spacesAhead.reduce((cnt, sp)=> {
+              if (sp.isEnemy()) return cnt + 1;
+              else return cnt;
+            }, 0),
+          archerAlive = spacesBack[2].isEnemy();
 
     this.maxHP = Math.max(this.maxHP, currHP);
 
@@ -28,23 +31,10 @@ class Player {
       warrior.rescue();
       this.rescCnt -= 1;
     }
-    else if (/*kill the archer in the beggining*/)
-
-
-
-    else if (this.rescCnt > 0) {
-      warrior.walk();
+    else if (archerAlive) {
+      warrior.shoot('backward');
     }
-    else if (currHP < 8 && currHP < prevHP && numOfEnemiesToShootAhead > 1) {
-      warrior.walk('backward');
-    }
-    else if (enemy) {
-      warrior.attack();
-    }
-    else if (currHP < this.maxHP && numOfEnemiesToShootAhead > 0) {
-      warrior.rest();
-    }
-    else if (numOfEnemiesToShootAhead > 0) {
+    else if (numOfEnemiesToShootAhead>0) {
       warrior.shoot();
     }
     else {
@@ -52,5 +42,17 @@ class Player {
     }
 
     this.prevHP = currHP;
+  }
+
+  _isOnlyWallAhead(spaces) {
+    for (var i = 0; i < spaces.length; ++i) {
+      let space = spaces[i];
+
+      if (space.isWall()) return true;
+      else if (space.isEmpty() && !space.isStairs()) continue;
+      else break;
+    }
+
+    return false;
   }
 }
