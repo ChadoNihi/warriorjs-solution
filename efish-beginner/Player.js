@@ -3,7 +3,7 @@ class Player {
     this.prevHP;
     this.maxHP = -1;
     //this.enemyCnt = 2;
-    this.rescCnt = 1;
+    this.rescCnt = 3;
     this.left = false;
   }
 
@@ -14,7 +14,7 @@ class Player {
           emptyBack = spaceBack.isEmpty(),
           enemy = space.isEnemy(),
           wall = space.isWall(),
-          wallBack = spaceBack.isWall(),
+          //wallBack = spaceBack.isWall(),
           currHP = warrior.health(),
           numOfEnemiesToShootAhead = warrior.look().reduce((cnt, sp)=> {
             if (sp.isEnemy()) return cnt + 1;
@@ -23,10 +23,15 @@ class Player {
 
     this.maxHP = Math.max(this.maxHP, currHP);
 
-    if (space.isCaptive()) {
+    if (wall) warrior.pivot();
+    else if (space.isCaptive()) {
       warrior.rescue();
       this.rescCnt -= 1;
     }
+    else if (/*kill the archer in the beggining*/)
+
+
+
     else if (this.rescCnt > 0) {
       warrior.walk();
     }
